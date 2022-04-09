@@ -3,6 +3,7 @@ package com.xiaocai.mywiki.controller;
 
 import com.xiaocai.mywiki.domain.Ebook;
 import com.xiaocai.mywiki.domain.Test;
+import com.xiaocai.mywiki.response.CommonResponse;
 import com.xiaocai.mywiki.service.EBookService;
 import com.xiaocai.mywiki.service.impl.TestServiceImpl;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,7 +21,8 @@ public class EBookController {
     EBookService testService;
 
     @GetMapping("/books")
-    public List<Ebook> testHello() {
-        return testService.list();
+    public CommonResponse testHello() {
+        List<Ebook> ebooks = testService.list();
+        return new CommonResponse().success(ebooks);
     }
 }
