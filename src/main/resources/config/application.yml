@@ -11,3 +11,7 @@ spring:
     password: cailei666
     url: jdbc:mysql://localhost:3306/wiki?useSSL=false&useUnicode=true&characterEncoding=utf-8&serverTimezone=Asia/Shanghai
     driver-class-name: com.mysql.cj.jdbc.Driver
+
+# 配置mybatis 所有Mapper.xml 的路径
+mybatis:
+  mapper-locations: classpath:/mapper/**/*.xml
