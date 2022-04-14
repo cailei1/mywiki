@@ -48,13 +48,21 @@
         <a-layout-content
                 :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '500px' }"
         >
-            Content
+            <pre>{{eBooks}}</pre>
+
         </a-layout-content>
     </a-layout>
 </template>
 
-<script lang="ts">
-    import {defineComponent} from 'vue';
+<!--<script setup lang="ts">-->
+<!--    // TypeScript enabled-->
+<!--   -->
+
+<!--    const count = ref(1)-->
+<!--</script>-->
+
+<script>
+    import {defineComponent, onMounted, ref} from 'vue';
     import HelloWorld from '@/components/HelloWorld.vue';
     import axios from 'axios';
 
@@ -65,10 +73,19 @@
             HelloWorld,
         },
         setup() {
-            axios.get("http://localhost:8888/books").then(response => {
-                console.log("setUp")
-                console.log(response)
-            })
+            const eBooks = ref();
+
+            onMounted(() => {
+                axios.get("http://localhost:8888/books").then(response => {
+                    console.log("setUp")
+                    const data = response.data;
+                    eBooks.value = data.data;
+                    console.log(response)
+                });
+            });
+
+            return {eBooks}
         }
+
     });
 </script>
