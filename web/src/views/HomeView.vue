@@ -129,7 +129,7 @@
             ];
 
             onMounted(() => {
-                axios.get("http://localhost:8888/books").then(response => {
+                axios.get("/books").then(response => {
                     console.log("setUp")
                     const data = response.data;
                     eBooks.value = data.data;
