@@ -1,12 +1,128 @@
 <template>
-    <a-layout>
-        <a-layout-content
-                :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '500px' }"
-        >
-           电子书管理界面
+  <a-layout>
+    <a-layout-content
+        :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '500px' }"
+    >
+      <a-table
+          :columns="columns"
+          :row-key="record => record.id"
+          :data-source="ebooks"
+          :pagination="pagination"
+          :loading="loading"
+          @change="handleTableChange"
+      >
+        <template #cover="{ text: cover }">
+          <img width="50" v-if="cover" :src="cover" alt="avatar" />
+        </template>
+        <template>
+          <a-space size="small">
 
-        </a-layout-content>
-    </a-layout>
+            <a-button type="primary">
+              编辑
+            </a-button>
+
+            <a-button type="danger">
+              删除
+            </a-button>
+          </a-space>
+        </template>
+      </a-table>
+
+    </a-layout-content>
+  </a-layout>
 </template>
+
+
+<script lang="ts">
+import {SmileOutlined, DownOutlined} from '@ant-design/icons-vue';
+import {defineComponent, onMounted, ref} from 'vue';
+import axios from 'axios';
+
+export default defineComponent({
+  name: "AdminEbook",
+  components: {
+    SmileOutlined,
+    DownOutlined,
+  },
+  setup() {
+    const ebooks = ref();
+    const pagination = ref({
+      current: 1,
+      pageSize: 2,
+      total: 0
+    });
+    const loading = ref(false);
+    const columns = [
+      {
+        title: '封面',
+        dataIndex: 'cover',
+        slots: {customRender: 'cover'}
+      },
+      {
+        title: '名称',
+        dataIndex: 'name'
+      },
+      {
+        title: '分类一',
+        key: 'category1Id',
+      },
+      {
+        title: '文档数',
+        dataIndex: 'docCount'
+      },
+      {
+        title: '阅读数',
+        dataIndex: 'viewCount'
+      },
+      {
+        title: '点赞数',
+        dataIndex: 'voteCount'
+      },
+      {
+        title: 'Action',
+        key: 'action',
+        slots: {customRender: 'action'}
+      }
+    ];
+
+    /**
+     * 数据查询
+     **/
+    const handleQuery = (params: any) => {
+      loading.value = true;
+      // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
+      ebooks.value = [];
+      axios.get("/books", params).then((response) => {
+        loading.value = false;
+        const data = response.data;
+        ebooks.value = data.data;
+
+        // 重置分页按钮
+        pagination.value.current = params.page;
+      });
+    };
+
+    const handleTableChange = (pagination: any) => {
+      handleQuery({
+        page: pagination.current,
+        size: pagination.size,
+      })
+    };
+
+
+    onMounted(() => {
+      handleQuery({})
+    })
+
+
+    return {
+      ebooks,
+      pagination,
+      columns,
+      loading,
+    };
+  },
+});
+</script>
 
 
