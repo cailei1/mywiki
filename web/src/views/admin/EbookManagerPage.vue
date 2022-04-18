@@ -14,10 +14,10 @@
         <template #cover="{ text: cover }">
           <img width="50" v-if="cover" :src="cover" alt="avatar"/>
         </template>
-        <template>
+        <template v-slot:action="">
           <a-space size="small">
 
-            <a-button type="primary">
+            <a-button type="primary" @click="edit">
               编辑
             </a-button>
 
@@ -30,6 +30,14 @@
 
     </a-layout-content>
   </a-layout>
+
+  <a-modal
+      title="电子书表单"
+      v-model:visible="modalVisible"
+      :confirm-loading="modalLoading"
+      @ok="handleOk"
+  ></a-modal>
+  <p>test</p>
 </template>
 
 
@@ -86,6 +94,23 @@ export default defineComponent({
     ];
 
     /**
+     * 编辑框 属性
+     */
+    const modalVisible = ref(false)
+    const modalLoading = ref(false)
+    const handleOk = () => {
+      modalLoading.value = true;
+      setTimeout(() => {
+        modalLoading.value = false;
+        modalVisible.value = false;
+      }, 2000)
+    }
+
+    const edit = () => {
+      modalVisible.value = true;
+    }
+
+    /**
      * 数据查询
      **/
     const handleQuery = (params: any) => {
@@ -131,7 +156,11 @@ export default defineComponent({
       pagination,
       columns,
       loading,
-      handleTableChange
+      handleTableChange,
+      modalVisible,
+      modalLoading,
+      handleOk,
+      edit
     };
   },
 });
