@@ -129,7 +129,7 @@ export default defineComponent({
     ];
 
     onMounted(() => {
-      axios.get("/books").then(response => {
+      axios.get("/ebook/books").then(response => {
         console.log("setUp")
         const data = response.data;
         eBooks.value = data.data;

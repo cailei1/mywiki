@@ -1,6 +1,6 @@
 package com.xiaocai.mywiki.request;
 
-public class EbookRequest {
+public class EbookRequest extends PageRequest{
     private Long id;
 
     private String name;
