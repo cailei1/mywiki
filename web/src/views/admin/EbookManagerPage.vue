@@ -14,10 +14,10 @@
         <template #cover="{ text: cover }">
           <img width="50" v-if="cover" :src="cover" alt="avatar"/>
         </template>
-        <template v-slot:action="">
+        <template v-slot:action="{ text, record }">
           <a-space size="small">
 
-            <a-button type="primary" @click="edit">
+            <a-button type="primary" @click="edit(record)">
               编辑
             </a-button>
 
@@ -36,8 +36,24 @@
       v-model:visible="modalVisible"
       :confirm-loading="modalLoading"
       @ok="handleOk"
-  ></a-modal>
-  <p>test</p>
+  >
+    <a-form :model="ebook" :label-col="{ span: 6 }">
+      <a-form-item label="封面">
+        <a-input v-model:value="ebook.cover"/>
+      </a-form-item>
+      <a-form-item label="名称">
+        <a-input v-model:value="ebook.name"/>
+      </a-form-item>
+      <a-form-item label="分类1">
+        <a-input v-model:value="ebook.description"/>
+      </a-form-item>
+      <a-form-item label="描述">
+        <a-input v-model:value="ebook.description" type="textarea"/>
+      </a-form-item>
+    </a-form>
+
+  </a-modal>
+
 </template>
 
 
@@ -106,10 +122,6 @@ export default defineComponent({
       }, 2000)
     }
 
-    const edit = () => {
-      modalVisible.value = true;
-    }
-
     /**
      * 数据查询
      **/
@@ -142,6 +154,14 @@ export default defineComponent({
     };
 
 
+    const ebook = ref({})
+
+    const edit = (record: any) => {
+      modalVisible.value = true;
+      ebook.value = record;
+    };
+
+
     onMounted(() => {
       handleQuery({
         page: 1,
@@ -160,7 +180,8 @@ export default defineComponent({
       modalVisible,
       modalLoading,
       handleOk,
-      edit
+      edit,
+      ebook
     };
   },
 });
