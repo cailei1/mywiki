@@ -48,4 +48,13 @@ public class EBookController {
         return new CommonResponse().success(aBoolean);
 
     }
+
+    @DeleteMapping("/delete/{id}")
+    public CommonResponse saveBook(@PathVariable Long id) {
+
+        Boolean aBoolean = testService.deleteBook(id);
+
+        return new CommonResponse().success(aBoolean);
+
+    }
 }

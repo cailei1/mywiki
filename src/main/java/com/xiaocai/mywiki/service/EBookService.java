@@ -14,4 +14,6 @@ public interface EBookService {
     PageResponse<EBookResponse> searchBooksByName(EbookRequest ebookRequest);
 
     Boolean saveBook(EbookSaveRequest ebookSaveRequest);
+
+    Boolean deleteBook(Long id);
 }

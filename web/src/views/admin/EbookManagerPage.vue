@@ -3,9 +3,26 @@
     <a-layout-content
         :style="{ background: '#fff', padding: '24px', margin: 0, minHeight: '500px' }"
     >
+      <p>
+        <a-form layout="inline" :model="param">
+          <a-form-item>
+            <a-input v-model:value="param.name" placeholder="名称">
+            </a-input>
+          </a-form-item>
+          <a-form-item>
+            <a-button type="primary" @click="handleQuery({page: 1, size: pagination.pageSize})">
+              查询
+            </a-button>
+          </a-form-item>
+          <a-form-item>
+            <a-button type="primary" @click="add()">
+              新增
+            </a-button>
+          </a-form-item>
+        </a-form>
+      </p>
       <a-table
           :columns="columns"
-          :row-key="record => record.id"
           :data-source="ebooks"
           :pagination="pagination"
           :loading="loading"
@@ -14,16 +31,23 @@
         <template #cover="{ text: cover }">
           <img width="50" v-if="cover" :src="cover" alt="avatar"/>
         </template>
-        <template v-slot:action="{ text, record }">
+        <template v-slot:action="{ record }">
           <a-space size="small">
 
             <a-button type="primary" @click="edit(record)">
               编辑
             </a-button>
 
-            <a-button type="danger">
-              删除
-            </a-button>
+            <a-popconfirm
+                title="删除后不可恢复，确认删除?"
+                ok-text="是"
+                cancel-text="否"
+                @confirm="deleteBook(record.id)"
+            >
+              <a-button type="danger">
+                删除
+              </a-button>
+            </a-popconfirm>
           </a-space>
         </template>
       </a-table>
@@ -124,13 +148,38 @@ export default defineComponent({
         const data = response.data;
         // eslint-disable-next-line no-empty
         if (data) {
-          ebooks.value[editPos.value.positon] = ebook.value;
+          handleQuery({
+            page: pagination.value.current,
+            size: pagination.value.pageSize,
+          });
+          // ebooks.value[editPos.value.positon] = ebook.value;
         }
-
-        // 重置分页按钮
-        // pagination.value.current = params.page;
-        // pagination.value.total = data.data.total;
       });
+    }
+
+    const deleteBook = (id: number) => {
+      modalLoading.value = true;
+      console.log("删除id为:" + id)
+      axios.delete("/ebook/delete/" + id
+      ).then((response) => {
+        loading.value = false;
+        modalLoading.value = false;
+        modalVisible.value = false
+        const data = response.data;
+        // eslint-disable-next-line no-empty
+        if (data) {
+          handleQuery({
+            page: pagination.value.current,
+            size: pagination.value.pageSize,
+          });
+          // ebooks.value[editPos.value.positon] = ebook.value;
+        }
+      });
+    }
+
+    const add = () => {
+      modalVisible.value = true;
+      ebook.value = {};
     }
 
     /**
@@ -150,6 +199,7 @@ export default defineComponent({
         loading.value = false;
         const data = response.data;
         ebooks.value = data.data.pageLists;
+
 
         // 重置分页按钮
         pagination.value.current = params.page;
@@ -171,6 +221,7 @@ export default defineComponent({
     const edit = (record: any) => {
       modalVisible.value = true;
       ebook.value = record;
+      console.log("ebook.value = record" + record.id)
       // editPos.value.positon = ebooks.value.indexOf(record)
     };
 
@@ -183,8 +234,12 @@ export default defineComponent({
 
     })
 
+    // 查询新增按钮功能
+    const param = ref({});
+
 
     return {
+      param,
       ebooks,
       pagination,
       columns,
@@ -195,7 +250,9 @@ export default defineComponent({
       handleOk,
       edit,
       ebook,
-      editPos
+      editPos,
+      add,
+      deleteBook
     };
   },
 });

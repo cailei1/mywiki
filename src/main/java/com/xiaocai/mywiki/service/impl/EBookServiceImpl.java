@@ -82,4 +82,10 @@ public class EBookServiceImpl implements EBookService {
         ebookMapper.insert(ebook);
         return true;
     }
+
+    @Override
+    public Boolean deleteBook(Long id) {
+        ebookMapper.deleteByPrimaryKey(id);
+        return true;
+    }
 }
