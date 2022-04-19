@@ -116,10 +116,21 @@ export default defineComponent({
     const modalLoading = ref(false)
     const handleOk = () => {
       modalLoading.value = true;
-      setTimeout(() => {
+      axios.post("/ebook/save", ebook.value
+      ).then((response) => {
+        loading.value = false;
         modalLoading.value = false;
-        modalVisible.value = false;
-      }, 2000)
+        modalVisible.value = false
+        const data = response.data;
+        // eslint-disable-next-line no-empty
+        if (data) {
+          ebooks.value[editPos.value.positon] = ebook.value;
+        }
+
+        // 重置分页按钮
+        // pagination.value.current = params.page;
+        // pagination.value.total = data.data.total;
+      });
     }
 
     /**
@@ -155,10 +166,12 @@ export default defineComponent({
 
 
     const ebook = ref({})
+    let editPos = ref({positon: 0})
 
     const edit = (record: any) => {
       modalVisible.value = true;
       ebook.value = record;
+      // editPos.value.positon = ebooks.value.indexOf(record)
     };
 
 
@@ -181,7 +194,8 @@ export default defineComponent({
       modalLoading,
       handleOk,
       edit,
-      ebook
+      ebook,
+      editPos
     };
   },
 });

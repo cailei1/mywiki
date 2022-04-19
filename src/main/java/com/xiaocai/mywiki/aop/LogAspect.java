@@ -1,5 +1,6 @@
 package com.xiaocai.mywiki.aop;
 
+import com.alibaba.fastjson.JSONObject;
 import org.apache.tomcat.util.http.fileupload.RequestContext;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.ProceedingJoinPoint;
@@ -53,7 +54,7 @@ public class LogAspect {
 
         // 打印请求参数
         Object[] args = joinPoint.getArgs();
-        // LOG.info("请求参数: {}", JSONObject.toJSONString(args));
+        LOG.info("请求参数: {}", JSONObject.toJSONString(args));
 
         Object[] arguments = new Object[args.length];
         for (int i = 0; i < args.length; i++) {
