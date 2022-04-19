@@ -1,8 +1,11 @@
 package com.xiaocai.mywiki.request;
 
+import javax.validation.constraints.NotNull;
+
 public class EbookSaveRequest extends PageRequest {
     private Long id;
 
+    @NotNull(message = "书名不能为空")
     private String name;
 
     private Long category1Id;

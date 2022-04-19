@@ -14,6 +14,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.*;
 
+import javax.validation.Valid;
 import java.util.List;
 
 @RestController
@@ -32,7 +33,7 @@ public class EBookController {
 
 
     @GetMapping("/bookLists")
-    public CommonResponse searchBookByName(EbookRequest ebookRequest) {
+    public CommonResponse searchBookByName(@Valid EbookRequest ebookRequest) {
 
         PageResponse<EBookResponse> eBookResponsePageResponse = testService.searchBooksByName(ebookRequest);
 
@@ -41,7 +42,7 @@ public class EBookController {
     }
 
     @PostMapping("/save")
-    public CommonResponse saveBook(@RequestBody EbookSaveRequest ebookRequest) {
+    public CommonResponse saveBook(@Valid @RequestBody EbookSaveRequest ebookRequest) {
 
         Boolean aBoolean = testService.saveBook(ebookRequest);
 

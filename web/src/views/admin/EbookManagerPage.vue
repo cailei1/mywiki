@@ -85,6 +85,7 @@
 import {SmileOutlined, DownOutlined} from '@ant-design/icons-vue';
 import {defineComponent, onMounted, ref} from 'vue';
 import axios from 'axios';
+import {message} from 'ant-design-vue'
 
 export default defineComponent({
   name: "AdminEbook",
@@ -146,13 +147,17 @@ export default defineComponent({
         modalLoading.value = false;
         modalVisible.value = false
         const data = response.data;
+
+        console.log("data code:" + data.code)
         // eslint-disable-next-line no-empty
-        if (data) {
+        if (data.code == 200) {
           handleQuery({
             page: pagination.value.current,
             size: pagination.value.pageSize,
           });
           // ebooks.value[editPos.value.positon] = ebook.value;
+        } else {
+          message.error(data.msg);
         }
       });
     }
@@ -167,7 +172,7 @@ export default defineComponent({
         modalVisible.value = false
         const data = response.data;
         // eslint-disable-next-line no-empty
-        if (data) {
+        if (data.code == 200) {
           handleQuery({
             page: pagination.value.current,
             size: pagination.value.pageSize,
@@ -198,12 +203,15 @@ export default defineComponent({
       ).then((response) => {
         loading.value = false;
         const data = response.data;
-        ebooks.value = data.data.pageLists;
 
-
-        // 重置分页按钮
-        pagination.value.current = params.page;
-        pagination.value.total = data.data.total;
+        if (data.code == 200) {
+          ebooks.value = data.data.pageLists;
+          // 重置分页按钮
+          pagination.value.current = params.page;
+          pagination.value.total = data.data.total;
+        } else {
+          message.error(data.msg)
+        }
       });
     };
 
