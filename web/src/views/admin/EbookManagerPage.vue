@@ -86,6 +86,7 @@ import {SmileOutlined, DownOutlined} from '@ant-design/icons-vue';
 import {defineComponent, onMounted, ref} from 'vue';
 import axios from 'axios';
 import {message} from 'ant-design-vue'
+import {Tool} from "@/utils/Tool";
 
 export default defineComponent({
   name: "AdminEbook",
@@ -197,7 +198,8 @@ export default defineComponent({
       axios.get("/ebook/bookLists", {
             params: {
               page: params.page,
-              pageSize: params.pageSize
+              pageSize: params.pageSize,
+              name: param.value.name
             }
           }
       ).then((response) => {
@@ -228,7 +230,7 @@ export default defineComponent({
 
     const edit = (record: any) => {
       modalVisible.value = true;
-      ebook.value = record;
+      ebook.value = Tool.copy(record);
       console.log("ebook.value = record" + record.id)
       // editPos.value.positon = ebooks.value.indexOf(record)
     };
@@ -243,7 +245,8 @@ export default defineComponent({
     })
 
     // 查询新增按钮功能
-    const param = ref({});
+    const param = ref();
+    param.value = {};
 
 
     return {
@@ -260,7 +263,8 @@ export default defineComponent({
       ebook,
       editPos,
       add,
-      deleteBook
+      deleteBook,
+      handleQuery
     };
   },
 });
