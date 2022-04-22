@@ -6,11 +6,7 @@
       <p>
         <a-form layout="inline" :model="param">
           <a-form-item>
-            <a-input v-model:value="param.name" placeholder="名称">
-            </a-input>
-          </a-form-item>
-          <a-form-item>
-            <a-button type="primary" @click="handleQuery({page: 1, size: pagination.pageSize})">
+            <a-button type="primary" @click="handleQuery()">
               查询
             </a-button>
           </a-form-item>
@@ -22,22 +18,18 @@
         </a-form>
       </p>
       <a-table
+          v-if="level1.length > 0"
           :columns="columns"
-          :data-source="categorys"
-          :pagination="pagination"
+          :data-source="level1"
+          :pagination="false"
           :loading="loading"
-          @change="handleTableChange"
       >
-        <template #cover="{ text: cover }">
-          <img width="50" v-if="cover" :src="cover" alt="avatar"/>
-        </template>
+
         <template v-slot:action="{ record }">
           <a-space size="small">
-
             <a-button type="primary" @click="edit(record)">
               编辑
             </a-button>
-
             <a-popconfirm
                 title="删除后不可恢复，确认删除?"
                 ok-text="是"
@@ -93,11 +85,6 @@ export default defineComponent({
   },
   setup() {
     const categorys = ref();
-    const pagination = ref({
-      current: 1,
-      pageSize: 4,
-      total: 0
-    });
     const loading = ref(false);
     const columns = [
 
@@ -107,7 +94,7 @@ export default defineComponent({
       },
       {
         title: '父类',
-        key: 'parent',
+        dataIndex: 'parent',
       },
       {
         title: '排序',
@@ -137,10 +124,7 @@ export default defineComponent({
         console.log("data code:" + data.code)
         // eslint-disable-next-line no-empty
         if (data.code == 200) {
-          handleQuery({
-            page: pagination.value.current,
-            size: pagination.value.pageSize,
-          });
+          handleQuery();
           // categorys.value[editPos.value.positon] = category.value;
         } else {
           message.error(data.msg);
@@ -159,10 +143,7 @@ export default defineComponent({
         const data = response.data;
         // eslint-disable-next-line no-empty
         if (data.code == 200) {
-          handleQuery({
-            page: pagination.value.current,
-            size: pagination.value.pageSize,
-          });
+          handleQuery();
           // categorys.value[editPos.value.positon] = category.value;
         }
       });
@@ -173,41 +154,11 @@ export default defineComponent({
       category.value = {};
     }
 
-    /**
-     * 数据查询
-     **/
-    const handleQuery = (params: any) => {
-      loading.value = true;
-      // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
-      categorys.value = [];
-      axios.get("/category/bookLists", {
-            params: {
-              page: params.page,
-              pageSize: params.pageSize,
-              name: param.value.name
-            }
-          }
-      ).then((response) => {
-        loading.value = false;
-        const data = response.data;
 
-        if (data.code == 200) {
-          categorys.value = data.data.pageLists;
-          // 重置分页按钮
-          pagination.value.current = params.page;
-          pagination.value.total = data.data.total;
-        } else {
-          message.error(data.msg)
-        }
-      });
-    };
 
-    const handleTableChange = (pagination: any) => {
-      handleQuery({
-        page: pagination.current,
-        pageSize: pagination.pageSize,
-      })
-    };
+    // const handleTableChange = () => {
+    //   handleQuery()
+    // };
 
 
     const category = ref({})
@@ -221,11 +172,47 @@ export default defineComponent({
     };
 
 
+    /**
+     * 一级分类树，children属性就是二级分类
+     * [{
+     *   id: "",
+     *   name: "",
+     *   children: [{
+     *     id: "",
+     *     name: "",
+     *   }]
+     * }]
+     */
+    const level1 = ref(); // 一级分类树，children属性就是二级分类
+    level1.value = [];
+
+
+    /**
+     * 数据查询
+     **/
+    const handleQuery = () => {
+      loading.value = true;
+      // 如果不清空现有数据，则编辑保存重新加载数据后，再点编辑，则列表显示的还是编辑前的数据
+      level1.value = [];
+      axios.get("/category/categories"
+      ).then((response) => {
+        loading.value = false;
+        const data = response.data;
+
+        if (data.code == 200) {
+          categorys.value = data.data;
+          level1.value = [];
+          level1.value = Tool.array2Tree(categorys.value, 0);
+          console.log("树形结构：", level1);
+        } else {
+          message.error(data.msg)
+        }
+      });
+    };
+
+
     onMounted(() => {
-      handleQuery({
-        page: 1,
-        pageSize: pagination.value.pageSize
-      })
+      handleQuery()
 
     })
 
@@ -237,10 +224,8 @@ export default defineComponent({
     return {
       param,
       categorys,
-      pagination,
       columns,
       loading,
-      handleTableChange,
       modalVisible,
       modalLoading,
       handleOk,
@@ -249,7 +234,8 @@ export default defineComponent({
       editPos,
       add,
       deletCategory,
-      handleQuery
+      handleQuery,
+      level1
     };
   },
 });

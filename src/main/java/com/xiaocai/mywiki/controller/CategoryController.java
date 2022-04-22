@@ -24,9 +24,9 @@ public class CategoryController {
     @Autowired
     CategoryService testService;
 
-    @GetMapping("/books")
+    @GetMapping("/categories")
     public CommonResponse testHello() {
-        List<Category> categorys = testService.list();
+        List<CategoryResponse> categorys = testService.list();
         return new CommonResponse().success(categorys);
     }
 

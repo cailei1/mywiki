@@ -9,7 +9,7 @@ import com.xiaocai.mywiki.response.PageResponse;
 import java.util.List;
 
 public interface CategoryService {
-    List<Category> list();
+    List<CategoryResponse> list();
 
     PageResponse<CategoryResponse> searchBooksByName(CategoryRequest categoryRequest);
 

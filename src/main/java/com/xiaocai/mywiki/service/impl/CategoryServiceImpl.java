@@ -30,8 +30,13 @@ public class CategoryServiceImpl implements CategoryService {
     SnowFlake snowFlake;
 
     @Override
-    public List<Category> list() {
-        return categoryMapper.selectByExample(null);
+    public List<CategoryResponse> list() {
+        CategoryExample categoryExample = new CategoryExample();
+//        CategoryExample.Criteria criteria = categoryExample.createCriteria();
+        categoryExample.setOrderByClause("sort asc");
+        List<Category> categories = categoryMapper.selectByExample(categoryExample);
+        List<CategoryResponse> responses = CopyUtil.copyList(categories,CategoryResponse.class);
+        return responses;
     }
 
     @Override
