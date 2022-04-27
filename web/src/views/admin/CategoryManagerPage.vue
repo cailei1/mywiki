@@ -22,6 +22,7 @@
           :columns="columns"
           :data-source="level1"
           :pagination="false"
+          :row-key="record => record.id"
           :loading="loading"
       >
 
@@ -48,7 +49,7 @@
   </a-layout>
 
   <a-modal
-      title="电子书表单"
+      title="分类表单"
       v-model:visible="modalVisible"
       :confirm-loading="modalLoading"
       @ok="handleOk"
@@ -57,8 +58,18 @@
       <a-form-item label="名称">
         <a-input v-model:value="category.name"/>
       </a-form-item>
-      <a-form-item label="父类">
-        <a-input v-model:value="category.parent" type="textarea"/>
+      <a-form-item label="父分类">
+        <a-select
+            v-model:value="category.parent"
+            ref="select"
+        >
+          <a-select-option :value="0">
+            无
+          </a-select-option>
+          <a-select-option v-for="c in level1" :key="c.id" :value="c.id" :disabled="category.id === c.id">
+            {{ c.name }}
+          </a-select-option>
+        </a-select>
       </a-form-item>
       <a-form-item label="排序">
         <a-input v-model:value="category.sort" type="textarea"/>
@@ -153,7 +164,6 @@ export default defineComponent({
       modalVisible.value = true;
       category.value = {};
     }
-
 
 
     // const handleTableChange = () => {
